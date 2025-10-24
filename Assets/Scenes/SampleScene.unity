@@ -350,10 +350,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1580576639}
   - component: {fileID: 1580576638}
-  - component: {fileID: 1580576637}
-  - component: {fileID: 1580576642}
   - component: {fileID: 1580576644}
   - component: {fileID: 1580576643}
+  - component: {fileID: 1580576645}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -361,18 +360,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1580576637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580576636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4480bd330e2555b4d9aa67a66d622493, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!212 &1580576638
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -446,40 +433,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1580576642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1580576636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
-  m_Actions: {fileID: -944628639613478452, guid: cc80871922228854d94a4fad095f8663, type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 5383740f-8526-4679-a21d-cfbe02713a16
-    m_ActionName: 'Player/New action[/Keyboard/w,/Keyboard/d,/Keyboard/a]'
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!61 &1580576643
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -553,6 +506,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1580576645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580576636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76793347982fdc64aa4704b19c3cedf0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  velocidadMovimiento: 5
+  fuerzaSalto: 10
 --- !u!1 &1898031660
 GameObject:
   m_ObjectHideFlags: 0
