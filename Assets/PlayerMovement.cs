@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -20,17 +21,20 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        bool wasGrounded = isGrounded;
         // Verificar si est� en el suelo
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-
+        Debug.Log(isGrounded);
         // Movimiento
         float h = Input.GetAxis("Horizontal");
         rb.linearVelocity = new Vector2(h * MovementSpeed, rb.linearVelocity.y);
-
+        
         // Salto solo si est� en el suelo
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && !isGrounded)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
+            Debug.Log("Jump!");
+            rb.AddForceAtPosition(new Vector2(0, 10f), Vector2.up, ForceMode2D.Impulse);
+            //rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
         }
     }
 
@@ -38,8 +42,23 @@ public class PlayerMovement : MonoBehaviour
     {
         if (groundCheck != null)
         {
-            Gizmos.color = Color.red;
+            // Verde si está en el suelo, rojo si no
+            Gizmos.color = isGrounded ? Color.green : Color.red;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+
+            // Dibujar línea desde el centro del personaje
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(transform.position, groundCheck.position);
         }
+    }
+
+    internal void ApplyKnockback(Vector2 direction, float finalKnockback, float stunTime)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal bool IsFacingRight()
+    {
+        throw new NotImplementedException();
     }
 }
