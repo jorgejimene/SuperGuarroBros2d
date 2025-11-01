@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -13,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded;
+    private bool facingRight=true;
 
     void Start()
     {
@@ -28,7 +30,16 @@ public class PlayerMovement : MonoBehaviour
         // Movimiento
         float h = Input.GetAxis("Horizontal");
         rb.linearVelocity = new Vector2(h * MovementSpeed, rb.linearVelocity.y);
-        
+
+        if(h > 0 && !facingRight)
+        {
+            Flip();
+        }
+        else if(h<0 && facingRight)
+        {
+            Flip();
+        }
+
         // Salto solo si est� en el suelo
         if (Input.GetKeyDown(KeyCode.Space) && !isGrounded)
         {
@@ -36,6 +47,14 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForceAtPosition(new Vector2(0, 10f), Vector2.up, ForceMode2D.Impulse);
             //rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
         }
+    }
+
+    private void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
     }
 
     void OnDrawGizmosSelected()
@@ -59,6 +78,6 @@ public class PlayerMovement : MonoBehaviour
 
     internal bool IsFacingRight()
     {
-        throw new NotImplementedException();
+        return facingRight;
     }
 }
