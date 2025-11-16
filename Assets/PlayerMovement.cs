@@ -22,6 +22,10 @@ public class PlayerMovement : MonoBehaviour
     public Transform ceilingCheck;
     public float wallCheckDistance = 0.2f;
     public float ceilingCheckRadius = 0.5f;
+
+    [Header("Respawn System")]
+    public Vector3 respawnPosition = Vector3.zero;
+    public float respawnDelay = 0.5f;
     
     private Rigidbody2D rb;
     private bool isGrounded;
@@ -30,6 +34,9 @@ public class PlayerMovement : MonoBehaviour
     private bool isTouchingCeiling;
     private bool facingRight = true;
     private int jumpCount = 0;
+
+    private Vector2 currentGravityDirection = Vector2.down;
+    private bool isDead = false;
     
     void Start()
     {
@@ -217,9 +224,55 @@ public class PlayerMovement : MonoBehaviour
     }
 void OnTriggerEnter2D(Collider2D other)
     {
+        // Verificar si el objeto con el que colisionamos es una Blast Zone
+        if (other.CompareTag("BlastZone"))
+        {
+            Debug.Log($"¡Player entró en Blast Zone: {other.gameObject.name}!");
+            Die();
+        }
+
 	Update();
     }
 
+private void Die()
+    {
+        if (isDead) return;
+        
+        isDead = true;
+        Debug.Log("¡Player ha muerto! Respawn en posición: " + respawnPosition);
+        
+        // Detener el movimiento
+        rb.linearVelocity = Vector2.zero;
+        
+        // Opcional: Desactivar el renderizado temporalmente
+        // GetComponent<SpriteRenderer>().enabled = false;
+        
+        // Invocar el respawn después de un delay
+        Invoke("Respawn", respawnDelay);
+    }
+    
+    private void Respawn()
+    {
+        // Resetear posición
+        transform.position = respawnPosition;
+        
+        // Resetear velocidad y rotación
+        rb.linearVelocity = Vector2.zero;
+        transform.rotation = Quaternion.identity;
+        
+        // Resetear variables de estado
+        jumpCount = 0;
+        currentGravityDirection = Vector2.down;
+        facingRight = true;
+        
+        // Reactivar el renderizado si lo desactivaste
+        // GetComponent<SpriteRenderer>().enabled = true;
+        
+        // Reactivar el control
+        isDead = false;
+        
+        Debug.Log("Player respawneado en posición inicial");
+    }
     
     // Métodos públicos para acceder a las colisiones
     public bool IsGrounded() => isGrounded;
