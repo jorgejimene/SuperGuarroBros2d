@@ -6,49 +6,165 @@ public class PlayerMovement : MonoBehaviour
 {
     public float MovementSpeed = 5f;
     public float JumpForce = 10f;
-
+    
+    [Header("Double Jump")]
+    public bool allowDoubleJump = true;
+    public float doubleJumpForce = 8f;
+    
     [Header("Ground Check")]
     public Transform groundCheck;
-    public float groundCheckRadius = 0.2f;
+    public float groundCheckRadius = 1f;
     public LayerMask groundLayer;
-
+    
+    [Header("Wall & Ceiling Check")]
+    public Transform leftCheck;
+    public Transform rightCheck;
+    public Transform ceilingCheck;
+    public float wallCheckDistance = 0.2f;
+    public float ceilingCheckRadius = 0.5f;
+    
     private Rigidbody2D rb;
     private bool isGrounded;
-    private bool facingRight=true;
-
+    private bool isTouchingWallLeft;
+    private bool isTouchingWallRight;
+    private bool isTouchingCeiling;
+    private bool facingRight = true;
+    private int jumpCount = 0;
+    
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        
+        // Crear GroundCheck automáticamente si no existe O si está mal posicionado
+        if (groundCheck == null || groundCheck.localPosition.y >= 0)
+        {
+            Transform existingCheck = transform.Find("GroundCheck");
+            if (existingCheck != null) DestroyImmediate(existingCheck.gameObject);
+            
+            GameObject groundCheckObj = new GameObject("GroundCheck");
+            groundCheckObj.transform.parent = transform;
+            groundCheckObj.transform.localPosition = new Vector3(0, -1f, 0);
+            groundCheck = groundCheckObj.transform;
+            Debug.Log("GroundCheck creado automáticamente");
+        }
+        
+        // Crear LeftCheck automáticamente
+        if (leftCheck == null)
+        {
+            Transform existingCheck = transform.Find("LeftCheck");
+            if (existingCheck != null) DestroyImmediate(existingCheck.gameObject);
+            
+            GameObject leftCheckObj = new GameObject("LeftCheck");
+            leftCheckObj.transform.parent = transform;
+            leftCheckObj.transform.localPosition = new Vector3(-0.5f, 0, 0);
+            leftCheck = leftCheckObj.transform;
+            Debug.Log("LeftCheck creado automáticamente");
+        }
+        
+        // Crear RightCheck automáticamente
+        if (rightCheck == null)
+        {
+            Transform existingCheck = transform.Find("RightCheck");
+            if (existingCheck != null) DestroyImmediate(existingCheck.gameObject);
+            
+            GameObject rightCheckObj = new GameObject("RightCheck");
+            rightCheckObj.transform.parent = transform;
+            rightCheckObj.transform.localPosition = new Vector3(0.5f, 0, 0);
+            rightCheck = rightCheckObj.transform;
+            Debug.Log("RightCheck creado automáticamente");
+        }
+        
+        // Crear CeilingCheck automáticamente
+        if (ceilingCheck == null)
+        {
+            Transform existingCheck = transform.Find("CeilingCheck");
+            if (existingCheck != null) DestroyImmediate(existingCheck.gameObject);
+            
+            GameObject ceilingCheckObj = new GameObject("CeilingCheck");
+            ceilingCheckObj.transform.parent = transform;
+            ceilingCheckObj.transform.localPosition = new Vector3(0, 1f, 0);
+            ceilingCheck = ceilingCheckObj.transform;
+            Debug.Log("CeilingCheck creado automáticamente");
+        }
+        
+        if (groundLayer == 0)
+            Debug.LogWarning("GroundLayer no está configurado!");
+        
+        if (((1 << gameObject.layer) & groundLayer) != 0)
+        {
+            Debug.LogError("¡ERROR! El Player está incluido en GroundLayer.");
+        }
     }
-
+    
+    void FixedUpdate()
+    {
+        // Verificar colisiones en todos los lados
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        isTouchingWallLeft = Physics2D.Raycast(leftCheck.position, Vector2.left, wallCheckDistance, groundLayer);
+        isTouchingWallRight = Physics2D.Raycast(rightCheck.position, Vector2.right, wallCheckDistance, groundLayer);
+        isTouchingCeiling = Physics2D.OverlapCircle(ceilingCheck.position, ceilingCheckRadius, groundLayer);
+        
+        // Si el cubo está rotado, cualquier lado puede ser el "suelo"
+        // Por eso consideramos que está "grounded" si toca cualquier superficie
+        isGrounded = isGrounded || isTouchingWallLeft || isTouchingWallRight || isTouchingCeiling;
+    }
+    
     void Update()
     {
-        bool wasGrounded = isGrounded;
-        // Verificar si est� en el suelo
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        Debug.Log(isGrounded);
+        // Reset jump count when grounded
+        if (isGrounded && rb.linearVelocity.y <= 0.1f)
+        {
+            if (jumpCount != 0)
+            {
+                Debug.Log($"Aterrizó! Reset jumpCount de {jumpCount} a 0");
+            }
+            jumpCount = 0;
+        }
+        
         // Movimiento
         float h = Input.GetAxis("Horizontal");
         rb.linearVelocity = new Vector2(h * MovementSpeed, rb.linearVelocity.y);
-
-        if(h > 0 && !facingRight)
+        
+        if (h > 0 && !facingRight)
         {
             Flip();
         }
-        else if(h<0 && facingRight)
+        else if (h < 0 && facingRight)
         {
             Flip();
         }
-
-        // Salto solo si est� en el suelo
-        if (Input.GetKeyDown(KeyCode.Space) && !isGrounded)
+        
+        // Sistema de salto con doble salto
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("Jump!");
-            rb.AddForceAtPosition(new Vector2(0, 10f), Vector2.up, ForceMode2D.Impulse);
-            //rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
+            Debug.Log($"=== PRESIONASTE SPACE ===");
+            Debug.Log($"isGrounded: {isGrounded}, jumpCount: {jumpCount}, velocity.y: {rb.linearVelocity.y}");
+            Debug.Log($"Tocando - Abajo:{Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer)}, Izq:{isTouchingWallLeft}, Der:{isTouchingWallRight}, Arriba:{isTouchingCeiling}");
+            
+            // Primer salto (tocando cualquier superficie)
+            if (isGrounded && jumpCount == 0)
+            {
+                Debug.Log("✓ ¡Primer salto ejecutado!");
+                // Saltar en la dirección opuesta a la gravedad o hacia arriba
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
+                jumpCount = 1;
+                Debug.Log($"jumpCount aumentado a: {jumpCount}");
+            }
+            // Doble salto (en el aire)
+            else if (allowDoubleJump && !isGrounded && jumpCount == 1)
+            {
+                Debug.Log("✓ ¡Doble salto ejecutado!");
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
+                jumpCount = 2;
+                Debug.Log($"jumpCount aumentado a: {jumpCount}");
+            }
+            else
+            {
+                Debug.Log($"✗ No se puede saltar: isGrounded={isGrounded}, jumpCount={jumpCount}, allowDoubleJump={allowDoubleJump}");
+            }
         }
     }
-
+    
     private void Flip()
     {
         facingRight = !facingRight;
@@ -56,28 +172,53 @@ public class PlayerMovement : MonoBehaviour
         scale.x *= -1;
         transform.localScale = scale;
     }
-
+    
     void OnDrawGizmosSelected()
     {
+        // Ground Check
         if (groundCheck != null)
         {
-            // Verde si está en el suelo, rojo si no
             Gizmos.color = isGrounded ? Color.green : Color.red;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-
-            // Dibujar línea desde el centro del personaje
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(transform.position, groundCheck.position);
+        }
+        
+        // Left Wall Check
+        if (leftCheck != null)
+        {
+            Gizmos.color = isTouchingWallLeft ? Color.green : Color.red;
+            Gizmos.DrawRay(leftCheck.position, Vector2.left * wallCheckDistance);
+            Gizmos.DrawWireSphere(leftCheck.position + (Vector3.left * wallCheckDistance), 0.1f);
+        }
+        
+        // Right Wall Check
+        if (rightCheck != null)
+        {
+            Gizmos.color = isTouchingWallRight ? Color.green : Color.red;
+            Gizmos.DrawRay(rightCheck.position, Vector2.right * wallCheckDistance);
+            Gizmos.DrawWireSphere(rightCheck.position + (Vector3.right * wallCheckDistance), 0.1f);
+        }
+        
+        // Ceiling Check
+        if (ceilingCheck != null)
+        {
+            Gizmos.color = isTouchingCeiling ? Color.green : Color.red;
+            Gizmos.DrawWireSphere(ceilingCheck.position, ceilingCheckRadius);
         }
     }
-
+    
     internal void ApplyKnockback(Vector2 direction, float finalKnockback, float stunTime)
     {
         throw new NotImplementedException();
     }
-
+    
     internal bool IsFacingRight()
     {
         return facingRight;
     }
+    
+    // Métodos públicos para acceder a las colisiones
+    public bool IsGrounded() => isGrounded;
+    public bool IsTouchingWallLeft() => isTouchingWallLeft;
+    public bool IsTouchingWallRight() => isTouchingWallRight;
+    public bool IsTouchingCeiling() => isTouchingCeiling;
 }

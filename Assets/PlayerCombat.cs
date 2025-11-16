@@ -15,9 +15,9 @@ public class PlayerCombat : MonoBehaviour
     public float attackCooldown = 0.3f;
     private float nextAttackTime = 0f;
 
-    [Header("Sistema de Daño")]
+    [Header("Sistema de Da o")]
     public float damagePercent = 0f;
-    public float knockbackMultiplier = 0.02f; // Cuanto más daño, más knockback
+    public float knockbackMultiplier = 0.02f; // Cuanto m s da o, m s knockback
 
     [Header("Efectos Visuales")]
     public SpriteRenderer sprite;
@@ -32,14 +32,14 @@ public class PlayerCombat : MonoBehaviour
         animator = GetComponent<Animator>();
         if (sprite == null) sprite = GetComponent<SpriteRenderer>();
 
-        // Crear AttackPoint automáticamente si no existe
+        // Crear AttackPoint autom ticamente si no existe
         if (attackPoint == null)
         {
             GameObject ap = new GameObject("AttackPoint");
             ap.transform.parent = transform;
-            ap.transform.localPosition = new Vector3(0.8f, 0, 0); // Ajusta según tu personaje
+            ap.transform.localPosition = new Vector3(0.8f, 0, 0); // Ajusta seg n tu personaje
             attackPoint = ap.transform;
-            Debug.Log("AttackPoint creado automáticamente");
+            Debug.Log("AttackPoint creado autom ticamente");
         }
     }
 
@@ -97,16 +97,16 @@ public class PlayerCombat : MonoBehaviour
                 PlayerCombat enemyCombat = enemy.GetComponent<PlayerCombat>();
                 if (enemyCombat != null)
                 {
-                    // Calcular dirección del knockback
+                    // Calcular direcci n del knockback
                     Vector2 direction = (enemy.transform.position - transform.position).normalized;
 
-                    // Si el ataque tiene dirección específica, usarla
+                    // Si el ataque tiene direcci n espec fica, usarla
                     if (knockbackDir != Vector2.right)
                     {
                         direction = knockbackDir.normalized;
                     }
 
-                    // Ajustar dirección horizontal según hacia dónde mira
+                    // Ajustar direcci n horizontal seg n hacia d nde mira
                     if (!movement.IsFacingRight())
                     {
                         direction.x *= -1;
@@ -126,22 +126,22 @@ public class PlayerCombat : MonoBehaviour
 
     public void TakeDamage(float damage, Vector2 direction, float baseForce, float stunTime)
     {
-        // Aumentar el porcentaje de daño
+        // Aumentar el porcentaje de da o
         damagePercent += damage;
 
-        // Calcular knockback final basado en el daño acumulado
+        // Calcular knockback final basado en el da o acumulado
         float finalKnockback = baseForce * (1 + damagePercent * knockbackMultiplier);
 
         // Aplicar knockback
         movement.ApplyKnockback(direction, finalKnockback, stunTime);
 
-        // Efecto visual de daño
+        // Efecto visual de da o
         StartCoroutine(DamageFlash());
 
         // Log para debug
-        Debug.Log($"{gameObject.name} Daño: {damagePercent:F1}% - Knockback: {finalKnockback:F1}");
+        Debug.Log($"{gameObject.name} Da o: {damagePercent:F1}% - Knockback: {finalKnockback:F1}");
 
-        // Verificar si cayó del mapa
+        // Verificar si cay  del mapa
         CheckDeath();
     }
 
