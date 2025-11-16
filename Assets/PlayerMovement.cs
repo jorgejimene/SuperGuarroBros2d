@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Respawn System")]
     public Vector3 respawnPosition = Vector3.zero;
-    public float respawnDelay = 0.5f;
+    public float respawnDelay = 2f;
     
     private Rigidbody2D rb;
     private bool isGrounded;
@@ -42,6 +42,8 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         
+    	respawnPosition = new Vector3(0f, 11.04f, 0f);	
+
         // Crear GroundCheck automáticamente si no existe O si está mal posicionado
         if (groundCheck == null || groundCheck.localPosition.y >= 0)
         {
@@ -105,6 +107,8 @@ public class PlayerMovement : MonoBehaviour
     
     void FixedUpdate()
     {
+	if (isDead) return;
+
         // Verificar colisiones en todos los lados
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         isTouchingWallLeft = Physics2D.Raycast(leftCheck.position, Vector2.left, wallCheckDistance, groundLayer);
@@ -118,6 +122,8 @@ public class PlayerMovement : MonoBehaviour
     
     void Update()
     {
+	if (isDead) return;
+
         // Reset jump count when grounded
         if (isGrounded && rb.linearVelocity.y <= 0.1f)
         {
@@ -244,8 +250,6 @@ private void Die()
         // Detener el movimiento
         rb.linearVelocity = Vector2.zero;
         
-        // Opcional: Desactivar el renderizado temporalmente
-        // GetComponent<SpriteRenderer>().enabled = false;
         
         // Invocar el respawn después de un delay
         Invoke("Respawn", respawnDelay);
@@ -264,9 +268,6 @@ private void Die()
         jumpCount = 0;
         currentGravityDirection = Vector2.down;
         facingRight = true;
-        
-        // Reactivar el renderizado si lo desactivaste
-        // GetComponent<SpriteRenderer>().enabled = true;
         
         // Reactivar el control
         isDead = false;
