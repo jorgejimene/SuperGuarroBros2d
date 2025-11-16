@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
             
             GameObject leftCheckObj = new GameObject("LeftCheck");
             leftCheckObj.transform.parent = transform;
-            leftCheckObj.transform.localPosition = new Vector3(-0.5f, 0, 0);
+            leftCheckObj.transform.localPosition = new Vector3(-1f, 0, 0);
             leftCheck = leftCheckObj.transform;
             Debug.Log("LeftCheck creado automáticamente");
         }
@@ -69,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
             
             GameObject rightCheckObj = new GameObject("RightCheck");
             rightCheckObj.transform.parent = transform;
-            rightCheckObj.transform.localPosition = new Vector3(0.5f, 0, 0);
+            rightCheckObj.transform.localPosition = new Vector3(1f, 0, 0);
             rightCheck = rightCheckObj.transform;
             Debug.Log("RightCheck creado automáticamente");
         }
@@ -215,6 +215,11 @@ public class PlayerMovement : MonoBehaviour
     {
         return facingRight;
     }
+void OnTriggerEnter2D(Collider2D other)
+    {
+	Update();
+    }
+
     
     // Métodos públicos para acceder a las colisiones
     public bool IsGrounded() => isGrounded;
