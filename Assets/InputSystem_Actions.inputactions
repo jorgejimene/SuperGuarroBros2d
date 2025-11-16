@@ -323,7 +323,18 @@
                 {
                     "name": "",
                     "id": "f2b8d67a-16c8-4773-87c4-319cb378d497",
-                    "path": "",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ab02ca17-84d6-4d13-8094-68b6dae78ebd",
+                    "path": "<Keyboard>/i",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

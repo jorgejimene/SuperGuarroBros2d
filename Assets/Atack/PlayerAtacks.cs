@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 public class PlayerAtacks : MonoBehaviour
 {
     public AnimationPunchInterface punchLeftInterface;
+    public AnimationPunchInterface punchRightInterface;
+    public AnimationPunchInterface punchUpInterface;
+    
     public InputActionAsset InputActions;
     private InputAction mAtackAction;
 
@@ -46,10 +49,22 @@ public class PlayerAtacks : MonoBehaviour
         Debug.Log("¡Ataque peruano disparado por: " + controlQueSePulso + "!");
 
         // Ahora puedes diferenciar
-        if (controlQueSePulso == "L")
+        if (controlQueSePulso == "J") //Left
+        {
+            Debug.Log("¡Fue la tecla J!");
+            punchLeftInterface.Atack();
+            // Hacer la acción de la tecla L...
+        }
+        else if (controlQueSePulso == "L") //Right
         {
             Debug.Log("¡Fue la tecla L!");
-            punchLeftInterface.Atack();
+            punchRightInterface.Atack();
+            // Hacer la acción de la tecla L...
+        }
+         else if (controlQueSePulso == "I") //Up
+        {
+            Debug.Log("¡Fue la tecla I!");
+            punchUpInterface.Atack();
             // Hacer la acción de la tecla L...
         }
         else if (controlQueSePulso == "Enter")

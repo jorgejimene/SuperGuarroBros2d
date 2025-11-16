@@ -19,6 +19,7 @@ public class AnimationPunchInterface : MonoBehaviour
         // Empezamos con el renderer DESACTIVADO (invisible)
         if (renderer != null)
         {
+            public GameObject renderer;
             renderer.SetActive(false); 
         }
     }
