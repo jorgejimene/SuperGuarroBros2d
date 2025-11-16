@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class TriggerZone2D : MonoBehaviour
 {
+    public AnimationPunchInterface animationObject;
     
     [SerializeField] float moveDistance = 1.0f; // Una distancia m�s razonable que 122.1
     [SerializeField] string requiredTag = "Player"; // leave empty to accept any
@@ -20,15 +21,17 @@ public class TriggerZone2D : MonoBehaviour
 
            if (playerRb != null)
            {
-               // Calculamos la nueva posici�n
-               // rb.position = su posici�n actual
-               // Vector2.left = (-1, 0)
-               Vector2 newPosition = playerRb.position + (Vector2.left * moveDistance);
+                if(!animationObject.isHide()){
+                    // Calculamos la nueva posici�n
+                    // rb.position = su posici�n actual
+                    // Vector2.left = (-1, 0)
+                    Vector2 newPosition = playerRb.position + (Vector2.left * moveDistance);
 
-               // Usamos MovePosition para mover el objeto de f�sicas
-               playerRb.MovePosition(newPosition);
+                    // Usamos MovePosition para mover el objeto de f�sicas
+                    playerRb.MovePosition(newPosition);
 
-               Debug.Log($"El jugador ha salido y se ha movido {moveDistance} unidades a la izquierda.");
+                    Debug.Log($"El jugador ha salido y se ha movido {moveDistance} unidades a la izquierda.");
+                }
            }
            else
            {

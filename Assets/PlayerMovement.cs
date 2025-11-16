@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
     public float JumpForce = 10f;
 
     [Header("Ground Check")]
-    public Transform groundCheck;
+    // public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // Verificar si est� en el suelo
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        // isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         // Movimiento
         float h = Input.GetAxis("Horizontal");
@@ -36,10 +36,10 @@ public class PlayerMovement : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-        }
+        // if (groundCheck != null)
+        // {
+        //     Gizmos.color = Color.red;
+        //     Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        // }
     }
 }

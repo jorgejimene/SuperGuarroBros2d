@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerAtacks : MonoBehaviour
 {
-
+    public AnimationPunchInterface punchLeftInterface;
     public InputActionAsset InputActions;
     private InputAction mAtackAction;
 
@@ -49,6 +49,7 @@ public class PlayerAtacks : MonoBehaviour
         if (controlQueSePulso == "L")
         {
             Debug.Log("¡Fue la tecla L!");
+            punchLeftInterface.Atack();
             // Hacer la acción de la tecla L...
         }
         else if (controlQueSePulso == "Enter")
