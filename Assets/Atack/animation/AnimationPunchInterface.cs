@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AnimationPunchInterface : MonoBehaviour
 {
-    private GameObject renderer;
+    public GameObject renderer;
 
     // Es mejor usar Awake para obtener componentes
     private void Awake()
