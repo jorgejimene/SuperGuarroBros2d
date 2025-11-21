@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class AnimationPunchInterface : MonoBehaviour
@@ -19,7 +20,7 @@ public class AnimationPunchInterface : MonoBehaviour
         // Empezamos con el renderer DESACTIVADO (invisible)
         if (renderer != null)
         {
-            public GameObject renderer;
+            
             renderer.SetActive(false); 
         }
     }
@@ -39,10 +40,17 @@ public class AnimationPunchInterface : MonoBehaviour
         }
     }
 
+    IEnumerator atackWaiter()
+    {
+        
+        yield return new WaitForSecondsRealtime(0.2f);
+        HideAttack();
+    }
+
     public void Atack(){
         ShowAttack();
-        // Invoke("SpawnDelay", 3);
-        // HideAttack();
+        StartCoroutine(atackWaiter());
+        
     }
 
     // También querrás una función para volver a ocultarlo
