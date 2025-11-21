@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.InputSystem; // ¡Añade esta línea!
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -7,6 +8,11 @@ public class PlayerMovement : MonoBehaviour
     public float MovementSpeed = 5f;
     public float JumpForce = 10f;
     
+
+    private PlayerInput playerInput;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+
     [Header("Double Jump")]
     public bool allowDoubleJump = true;
     public float doubleJumpForce = 8f;
@@ -41,7 +47,13 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        playerInput = GetComponent<PlayerInput>();
         
+        // Obtener las acciones específicas de este player
+        moveAction = playerInput.actions["Move"];
+        jumpAction = playerInput.actions["Jump"];
+
     	respawnPosition = new Vector3(0f, 11.04f, 0f);	
 
         // Crear GroundCheck automáticamente si no existe O si está mal posicionado
@@ -135,45 +147,30 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // Movimiento
-        float h = Input.GetAxis("Horizontal");
-        rb.linearVelocity = new Vector2(h * MovementSpeed, rb.linearVelocity.y);
-        
-        if (h > 0 && !facingRight)
+        Vector2 moveInput = moveAction.ReadValue<Vector2>();        
+        rb.linearVelocity = new Vector2(moveInput.x * MovementSpeed, rb.linearVelocity.y);
+                
+        if (moveInput.x > 0 && !facingRight)
         {
             Flip();
         }
-        else if (h < 0 && facingRight)
+        else if (moveInput.x < 0 && facingRight)
         {
             Flip();
         }
         
-        // Sistema de salto con doble salto
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Salto
+        if (jumpAction.triggered)
         {
-            Debug.Log($"=== PRESIONASTE SPACE ===");
-            Debug.Log($"isGrounded: {isGrounded}, jumpCount: {jumpCount}, velocity.y: {rb.linearVelocity.y}");
-            Debug.Log($"Tocando - Abajo:{Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer)}, Izq:{isTouchingWallLeft}, Der:{isTouchingWallRight}, Arriba:{isTouchingCeiling}");
-            
-            // Primer salto (tocando cualquier superficie)
             if (isGrounded && jumpCount == 0)
             {
-                Debug.Log("✓ ¡Primer salto ejecutado!");
-                // Saltar en la dirección opuesta a la gravedad o hacia arriba
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, JumpForce);
                 jumpCount = 1;
-                Debug.Log($"jumpCount aumentado a: {jumpCount}");
             }
-            // Doble salto (en el aire)
             else if (allowDoubleJump && !isGrounded && jumpCount == 1)
             {
-                Debug.Log("✓ ¡Doble salto ejecutado!");
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
                 jumpCount = 2;
-                Debug.Log($"jumpCount aumentado a: {jumpCount}");
-            }
-            else
-            {
-                Debug.Log($"✗ No se puede saltar: isGrounded={isGrounded}, jumpCount={jumpCount}, allowDoubleJump={allowDoubleJump}");
             }
         }
     }
