@@ -103,7 +103,7 @@ public class PlayerAtacks : MonoBehaviour
         var victimScript = other.GetComponent<PlayerMovement>();
         if (victimScript != null)
         {
-            victimScript.ApplyKnockback(knockbackDir, punchForce);
+            //victimScript.ApplyKnockback(knockbackDir, punchForce);
         }
     }
 
