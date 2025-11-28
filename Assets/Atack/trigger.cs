@@ -43,16 +43,24 @@ public class TriggerZone2D : MonoBehaviour
 
         // 1. Decidimos cuánta fuerza/distancia usar (asegúrate de que moveDistance tenga valor, ej: 2.0f)
         // Si moveDistance es muy pequeño (0.1), apenas se notará.
-        float fuerza = moveDistance;
+        pushDirection.y = 0.5f;
 
-        // 2. Calculamos el DESTINO final
-        // "Donde estás ahora" + "Hacia allá" * "Tantos metros"
-        Vector2 targetPosition = playerRb.position + (pushDirection * fuerza);
+        // (Opcional) Normalizamos otra vez para que la fuerza total no se dispare,
+        // aunque a veces mola que el golpe hacia arriba sea más fuerte.
+        pushDirection = pushDirection.normalized;
 
-        // 3. Movemos al Rigidbody a esa nueva posición
-        playerRb.MovePosition(targetPosition);
+        // -------------------------------
 
-        Debug.Log($"Jugador movido a: {targetPosition}");
+        // 1. Resetear velocidad (para que el golpe sea seco)
+        playerRb.linearVelocity = Vector2.zero;
+
+        // 2. Fuerza
+        float fuerzaDelGolpe = 5; // Asegúrate de poner esto a 10 o 20 en el Inspector
+
+        // 3. Aplicar fuerza IMPULSE
+        playerRb.AddForce(pushDirection * fuerzaDelGolpe, ForceMode2D.Impulse);
+
+        Debug.Log("¡A volar!");
         //}
 
 
