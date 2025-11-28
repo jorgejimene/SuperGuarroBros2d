@@ -9,6 +9,7 @@ public class PlayerAtacks : MonoBehaviour
     
     public InputActionAsset InputActions;
     private InputAction mAtackAction;
+    public GameObject other;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
@@ -76,6 +77,33 @@ public class PlayerAtacks : MonoBehaviour
         {
             Debug.Log("¡Fue el botón izquierdo del ratón!");
             // Hacer la acción del ratón...
+        }
+        onVictimAtacked();
+        
+    }
+
+    private void onVictimAtacked(){
+        Vector3 myPos = transform.position; // The Attacker (or the Fist)
+        Vector3 victimPos = other.transform.position; // The Victim
+
+        // 2. Calculate Direction: (Target - Origin)
+        Vector2 knockbackDir = (victimPos - myPos).normalized;
+
+        // 3. (Optional) Flatten the vector if you only want horizontal push
+        // knockbackDir.y = 0; 
+        // knockbackDir.x = Mathf.Sign(knockbackDir.x); // Returns 1 or -1
+
+        // 4. (Optional) Add a little "Pop Up" so they don't drag on the floor
+        knockbackDir.y = 0.2f; 
+
+        // 5. Send the force to the player
+        float punchForce = 10f; // How strong is the punch?
+        
+        // Get the script and call the function we created in Step 1
+        var victimScript = other.GetComponent<PlayerMovement>();
+        if (victimScript != null)
+        {
+            victimScript.ApplyKnockback(knockbackDir, punchForce);
         }
     }
 

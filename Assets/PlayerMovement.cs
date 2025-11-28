@@ -34,6 +34,22 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+
+    public void ApplyKnockback(Vector2 direction, float forceStrength)
+    {
+        Rigidbody2D myRb = GetComponent<Rigidbody2D>();
+
+        if (myRb != null)
+        {
+            // 1. Stop the player momentarily so the punch feels heavy
+            myRb.linearVelocity = Vector2.zero;
+
+            // 2. Add the force instantly (Impulse)
+            // direction * forceStrength gives the total push vector
+            myRb.AddForce(direction * forceStrength, ForceMode2D.Impulse);
+        }
+    }
+
     void OnDrawGizmosSelected()
     {
         // if (groundCheck != null)
