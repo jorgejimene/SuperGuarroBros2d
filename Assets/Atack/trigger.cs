@@ -14,46 +14,55 @@ public class TriggerZone2D : MonoBehaviour
         //if (other.CompareTag(requiredTag))
         //{
         Debug.Log("Collider ", other);
-            Debug.Log("Nos fuimo "+ other.gameObject.name);
+        Debug.Log("Nos fuimo "+ other.gameObject.name);
 
-            // 1. Get the PlayerMovement script
-            // (Changed variable name to 'playerScript' to be less confusing than 'playerRb')
-            //PlayerMovement playerScript = other.GetComponent<PlayerMovement>();
+        Rigidbody2D playerRb = other.GetComponent<Rigidbody2D>();
 
-            //if (playerScript != null)
-            //{
-                // Only punch if the animation/object is visible
-                //if (!animationObject.isHide())
-                //{
-                    // --- THE MATH IS HERE ---
+        // 1. Get the PlayerMovement script
+        // (Changed variable name to 'playerScript' to be less confusing than 'playerRb')
+        //PlayerMovement playerScript = other.GetComponent<PlayerMovement>();
 
-                    // A. Get positions
-                    Vector3 myPosition = transform.position; // The Fist/Trap center
-                    Vector3 victimPosition = other.transform.position; // The Player
+        //if (playerScript != null)
+        //{
+        // Only punch if the animation/object is visible
+        //if (!animationObject.isHide())
+        //{
+        // --- THE MATH IS HERE ---
 
-                    // B. Calculate Direction: (Victim - Attacker)
-                    // .normalized makes the length always 1, so only direction matters
-                    Vector2 pushDirection = (victimPosition - myPosition).normalized;
+        // A. Get positions
+        // ... (Tu código anterior para calcular pushDirection) ...
 
-                    // Optional: Add a little upward pop so they don't drag on the ground
-                    // pushDirection.y = 0.5f; 
+        // A. Obtener posiciones
+        Vector3 myPosition = transform.position;
+        Vector3 victimPosition = other.transform.position;
 
-                    // C. Call the function on the player
-                    // We use 'moveDistance' as the Force Strength now.
-                    // You might want to increase moveDistance in the inspector (try 10 or 15)
-                    //playerScript.ApplyKnockback(pushDirection, moveDistance);
+        // B. Calcular Dirección
+        Vector2 pushDirection = (victimPosition - myPosition).normalized;
 
-                    Debug.Log($"Punch applied in direction: {pushDirection}");
-                //}
+        // --- AQUÍ ESTÁ EL CAMBIO ---
+
+        // 1. Decidimos cuánta fuerza/distancia usar (asegúrate de que moveDistance tenga valor, ej: 2.0f)
+        // Si moveDistance es muy pequeño (0.1), apenas se notará.
+        float fuerza = moveDistance;
+
+        // 2. Calculamos el DESTINO final
+        // "Donde estás ahora" + "Hacia allá" * "Tantos metros"
+        Vector2 targetPosition = playerRb.position + (pushDirection * fuerza);
+
+        // 3. Movemos al Rigidbody a esa nueva posición
+        playerRb.MovePosition(targetPosition);
+
+        Debug.Log($"Jugador movido a: {targetPosition}");
+        //}
 
 
 
-            //}
-            //else
-            //{
-            //    Debug.LogWarning("Player found, but PlayerMovement script is missing!");
-            //}
-        }
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("Player found, but PlayerMovement script is missing!");
+        //}
+    }
     //}
 
     //void OnTriggerExit2D(Collider2D other)
