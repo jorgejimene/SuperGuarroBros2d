@@ -2,7 +2,9 @@ using System;
 using UnityEngine.InputSystem; // ¡Añade esta línea!
 using UnityEditor.Tilemaps;
 using UnityEngine;
-
+using System.Collections; // Necesario para IEnumerator
+using UnityEngine;
+using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     public float MovementSpeed = 5f;
@@ -131,34 +133,33 @@ public class PlayerMovement : MonoBehaviour
         // Por eso consideramos que está "grounded" si toca cualquier superficie
         isGrounded = isGrounded || isTouchingWallLeft || isTouchingWallRight || isTouchingCeiling;
     }
-    
+
+    private bool isKnockedBack = false;
+
     void Update()
     {
-	if (isDead) return;
+        if (isDead) return;
+
+        // 2. LA PUERTA DE SEGURIDAD
+        // Si nos han golpeado, SALIMOS. No dejamos que el teclado toque la velocidad.
+        if (isKnockedBack) return;
+
+        // --- A PARTIR DE AQUÍ DESCOMENTA TODO TU CÓDIGO ORIGINAL ---
 
         // Reset jump count when grounded
         if (isGrounded && rb.linearVelocity.y <= 0.1f)
         {
-            if (jumpCount != 0)
-            {
-                Debug.Log($"Aterrizó! Reset jumpCount de {jumpCount} a 0");
-            }
+            if (jumpCount != 0) Debug.Log($"Aterrizó!");
             jumpCount = 0;
         }
-        
+
         // Movimiento
-        Vector2 moveInput = moveAction.ReadValue<Vector2>();        
+        Vector2 moveInput = moveAction.ReadValue<Vector2>();
         rb.linearVelocity = new Vector2(moveInput.x * MovementSpeed, rb.linearVelocity.y);
-                
-        if (moveInput.x > 0 && !facingRight)
-        {
-            Flip();
-        }
-        else if (moveInput.x < 0 && facingRight)
-        {
-            Flip();
-        }
-        
+
+        if (moveInput.x > 0 && !facingRight) Flip();
+        else if (moveInput.x < 0 && facingRight) Flip();
+
         // Salto
         if (jumpAction.triggered)
         {
@@ -174,7 +175,33 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-    
+
+    // 3. NUEVA FUNCIÓN PARA RECIBIR EL GOLPE
+    // Esta función la llamará tu script de ataque
+    public void ApplyKnockback(Vector2 direction, float force, float stunTime = 0.5f)
+    {
+        // A. Activamos el modo "Aturdido"
+        isKnockedBack = true;
+
+        // B. Reseteamos la velocidad para que el golpe sea limpio
+        rb.linearVelocity = Vector2.zero;
+
+        // C. Aplicamos la fuerza
+        rb.AddForce(direction * force, ForceMode2D.Impulse);
+
+        Debug.Log("¡A volar! Fuerza aplicada.");
+
+        // D. Iniciamos la cuenta atrás para recuperar el control
+        StartCoroutine(RecoverFromKnockback(stunTime));
+    }
+
+    // 4. CORRUTINA PARA RECUPERAR EL CONTROL
+    private IEnumerator RecoverFromKnockback(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        isKnockedBack = false; // ¡Ya puedes moverte otra vez!
+    }
+
     private void Flip()
     {
         facingRight = !facingRight;
@@ -216,10 +243,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
     
-    internal void ApplyKnockback(Vector2 direction, float finalKnockback, float stunTime)
-    {
-        throw new NotImplementedException();
-    }
+   
     
     internal bool IsFacingRight()
     {
