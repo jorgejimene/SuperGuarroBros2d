@@ -11,6 +11,7 @@ public class PlayerAtacks : MonoBehaviour
     private InputAction mAtackAction;
     public GameObject other;
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     void Awake(){
@@ -103,7 +104,7 @@ public class PlayerAtacks : MonoBehaviour
         var victimScript = other.GetComponent<PlayerMovement>();
         if (victimScript != null)
         {
-            //victimScript.ApplyKnockback(knockbackDir, punchForce);
+            victimScript.ApplyKnockback(knockbackDir, punchForce, 20);
         }
     }
 
